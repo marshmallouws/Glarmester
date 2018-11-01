@@ -15,19 +15,23 @@ import java.util.logging.Logger;
 
 public class DataAccessorFile implements DataAccessor {
     private double glassPrice = Double.NaN;
-    private ArrayList<Frame> frames = new ArrayList<>();
+    //private ArrayList<Frame> frames = new ArrayList<>();
     
     private DBConnector connector = null;
+    
+    public DataAccessorFile(){
+        
+        try{
+            connector = new DBConnector();
+        } catch (SQLException e){
+            
+        }
+    }
     
     @Override
     public List<Frame> getFrames() throws DataException {
         
-        try { 
-            connector = new DBConnector();
-        } catch (SQLException ex) {
-            //Logger.getLogger(DataAccessorFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        ArrayList<Frame> frames = new ArrayList<>();
         String query = "SELECT frame_name, price FROM frame;";
         
         String name = "";
@@ -57,13 +61,7 @@ public class DataAccessorFile implements DataAccessor {
     @Override
     public Frame getFrame(String name) throws DataException {
         
-        try { 
-            connector = new DBConnector();
-        } catch (SQLException ex) {
-            //Logger.getLogger(DataAccessorFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        String query = "SELECT name, price FROM frame WHERE frame_name = '" + name + "';";
+        String query = "SELECT frame_name, price FROM frame WHERE frame_name = '" + name + "';";
         Frame frame = null;
         
         String f_name = "";
@@ -73,19 +71,23 @@ public class DataAccessorFile implements DataAccessor {
             Connection connection = connector.getConnection();
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            
+
             while(rs.next()){
                 f_name = rs.getString("frame_name");
                 price = rs.getDouble("price");
-
-                
+               
                 frame = new Frame(f_name, price);
             }
             
         } catch (SQLException ex) {
-            System.out.println("Hej");
+            throw new DataException("Bad name!");
             //Logger.getLogger(DataAccessObject_impl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if(frame == null){
+            throw new DataException();
+        }
+        
         return frame;
     
     }
