@@ -1,5 +1,5 @@
 import glarmester.data.DataAccessor;
-import glarmester.data.DataAccessorFile;
+import glarmester.data.DataAccessorDatabase;
 import glarmester.data.DataException;
 import glarmester.data.Frame;
 import org.junit.Assert;
@@ -14,7 +14,7 @@ public class DataAccessorTest {
     private DataAccessor da;
     
     public DataAccessorTest() {
-        da = new DataAccessorFile();
+        da = new DataAccessorDatabase();
     }
     
     @Test

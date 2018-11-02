@@ -4,126 +4,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import static glarmester.logic.ControllerImpl.DEBUG;
 import java.io.BufferedReader;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DataAccessorFile implements DataAccessor {
-    private double glassPrice = Double.NaN;
-    //private ArrayList<Frame> frames = new ArrayList<>();
-    
-    private DBConnector connector = null;
-    
-    public DataAccessorFile(){
-        
-        try{
-            connector = new DBConnector();
-        } catch (SQLException e){
-            
-        }
-    }
-    
-    @Override
-    public List<Frame> getFrames() throws DataException {
-        
-        ArrayList<Frame> frames = new ArrayList<>();
-        String query = "SELECT frame_name, price FROM frame;";
-        
-        String name = "";
-        double price = 0.0;
-        
-        try{
-            Connection connection = connector.getConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            
-            while(rs.next()){
-                name = rs.getString("frame_name");
-                price = rs.getDouble("price");
-
-                
-                frames.add(new Frame(name, price));
-            }
-            
-        } catch (SQLException ex) {
-            
-        }
-        
-        return frames;
-    }
-
-    
-    @Override
-    public Frame getFrame(String name) throws DataException {
-        
-        String query = "SELECT frame_name, price FROM frame WHERE frame_name = '" + name + "';";
-        Frame frame = null;
-        
-        String f_name = "";
-        double price = 0.0;
-        
-        try {
-            Connection connection = connector.getConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            while(rs.next()){
-                f_name = rs.getString("frame_name");
-                price = rs.getDouble("price");
-               
-                frame = new Frame(f_name, price);
-            }
-            
-        } catch (SQLException ex) {
-            throw new DataException("Bad name!");
-            //Logger.getLogger(DataAccessObject_impl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        if(frame == null){
-            throw new DataException();
-        }
-        
-        return frame;
-    
-    }
-
-    @Override
-    public double getGlassPrice() throws DataException {
-        
-        try { 
-            connector = new DBConnector();
-        } catch (SQLException ex) {
-            //Logger.getLogger(DataAccessorFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        String query = "SELECT price FROM glass;";
-        
-        try {
-            Connection connection = connector.getConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            
-            while(rs.next()){
-                glassPrice = rs.getDouble("price");
-            }
-            
-        } catch (SQLException ex) {
-            System.out.println("Hej");
-            //Logger.getLogger(DataAccessObject_impl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return glassPrice;
-        
-    }
-    
-    
-    /*
     private String FILENAME = "data.txt";
-    
+    private double glassPrice = Double.NaN;
+    private ArrayList<Frame> frames = new ArrayList<>();
     
     public void load() throws DataException {
         BufferedReader reader = null;
@@ -151,6 +38,34 @@ public class DataAccessorFile implements DataAccessor {
             throw new DataException(ex);
         }
     }
-    */
+
+    @Override
+    public List<Frame> getFrames() throws DataException {
+        if(frames == null || frames.isEmpty()){
+            load();
+        }
+        return frames;
+    }
+
+    @Override
+    public Frame getFrame(String name) throws DataException {
+        if(frames == null || frames.isEmpty()){
+            load();
+        }
+        for(Frame frame : frames){
+            if(frame.getName().equalsIgnoreCase(name))
+                return frame;
+        }
+        throw new DataException("Frame not found! - "+name);
+    }
+
+    @Override
+    public double getGlassPrice() throws DataException {
+        if(Double.compare(Double.NaN, glassPrice) == 0)
+            load();
+        return glassPrice;
+    }
+
+    
     
 }
