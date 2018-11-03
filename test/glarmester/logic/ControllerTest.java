@@ -57,31 +57,21 @@ public class ControllerTest {
      */
     @Test
     public void testGetFrameNames() {
-        List<Frame> frames = null; 
-        Frame frame = null;
+        List<String> frameNames = controller.getFrameNames();
+        String frame = "";
         
-        try {
-            frames = dao.getFrames();
-        } catch (DataException ex) {
-            //Logger.getLogger(ControllerTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        assertNotNull(frameNames);
+        assertFalse(frameNames.isEmpty());
+        assertEquals(3, frameNames.size());
+
+        frame = frameNames.get(0);
+        assertEquals("Plain", frame);
         
-        assertNotNull(frames);
-        assertFalse(frames.isEmpty());
-        assertEquals(3, frames.size());
+        frame = frameNames.get(1);
+        assertEquals("Ornate", frame);
         
-        frame = frames.get(0);
-        assertEquals("Plain", frame.getName());
-        assertEquals(100, frame.getPrice(), 0);
-        
-        frame = frames.get(1);
-        assertEquals("Ornate", frame.getName());
-        assertEquals(200, frame.getPrice(), 0);
-        
-        frame = frames.get(2);
-        assertEquals("Lavish", frame.getName());
-        assertEquals(350, frame.getPrice(), 0);
-        
+        frame = frameNames.get(2);
+        assertEquals("Lavish", frame);    
     }
 
     /**
@@ -100,33 +90,6 @@ public class ControllerTest {
         
         result = controller.getTotalPrice(100, 150, "lavish");
         assertEquals(2200, result, 0);
-        
-
-        /*
-        System.out.println("getTotalPrice");
-        int height_cm = 0;
-        int width_cm = 0;
-        String frameName = "";
-        Controller instance = new ControllerImpl();
-        double expResult = 0.0;
-        double result = instance.getTotalPrice(height_cm, width_cm, frameName);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-        */
     }
-
-    /*
-    public class ControllerImpl implements Controller {
-
-        public List<String> getFrameNames() {
-            return null;
-        }
-
-        public double getTotalPrice(int height_cm, int width_cm, String frameName) {
-            return 0.0;
-        }
-    }
-    */
     
 }
